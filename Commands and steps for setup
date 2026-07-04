@@ -6,3 +6,27 @@ cd translator-with-voice-and-watsonx
 
 pip install -r requirements.txt
 
+#Docker steps commands
+
+cd /home/project/translator-with-voice-and-watsonx/models/tts
+docker build ./text-to-speech -t tts-standalone:latest
+
+TTS_APPNAME=tts-standalone:latest
+STT_APPNAME=stt-standalone:latest
+
+REGISTRY=icr.io
+
+# Tag and push Text-to-Speech image
+docker tag ${TTS_APPNAME}:latest ${REGISTRY}/${NAMESPACE}/${TTS_APPNAME}:latest
+docker push ${REGISTRY}/${NAMESPACE}/${TTS_APPNAME}:latest
+
+# Tag and push Speech-to-Text image
+docker tag ${STT_APPNAME}:latest ${REGISTRY}/${NAMESPACE}/${STT_APPNAME}:latest
+docker push ${REGISTRY}/${NAMESPACE}/${STT_APPNAME}:latest
+
+
+cd /home/project/translator-with-voice-and-watsonx
+# Build, Tag and push main App image
+docker build . -t ${APP_NAME}:latest
+docker tag ${APP_NAME}:latest ${REGISTRY}/${NAMESPACE}/${APP_NAME}:latest
+docker push ${REGISTRY}/${NAMESPACE}/${APP_NAME}:latest
